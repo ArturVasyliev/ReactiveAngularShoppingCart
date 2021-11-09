@@ -8,16 +8,8 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>Socks</td>
-            <td><button type="button" class="btn btn-outline-primary btn-sm">Buy</button></td>
-        </tr>
-        <tr>
-            <td>Beer</td>
-            <td><button type="button" class="btn btn-outline-primary btn-sm">Buy</button></td>
-        </tr>
-        <tr>
-            <td>Lego Toy</td>
+        <tr *ngFor="let product of products$ | async">
+            <td>{{ product.productName }}</td>
             <td><button type="button" class="btn btn-outline-primary btn-sm">Buy</button></td>
         </tr>
     </tbody>
