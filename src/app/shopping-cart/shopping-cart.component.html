@@ -1,20 +1,29 @@
 <h4 class="text-center rasc-text-primary">Shopping Cart</h4>
 
-<table class="table align-middle">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Product Name</th>
-            <th scope="col">Quantity</th>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let product of products$ | async; index as i">
-            <th scope="row">{{ i + 1 }}</th>
-            <td>{{ product.productName }}</td>
-            <td>{{ product.quantity }}</td>
-            <td><button type="button" class="btn btn-outline-danger btn-sm">Remove</button></td>
-        </tr>
-    </tbody>
-</table>
+<ng-container *ngIf="(products$ | async) as products">
+    <table class="table align-middle" *ngIf="products.length > 0; else emptyCart">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Product Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let product of products; index as i">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ product.productName }}</td>
+                <td>{{ product.quantity }}</td>
+                <td><button type="button" class="btn btn-outline-danger btn-sm"
+                        (click)="removeProduct(product)">Remove</button></td>
+            </tr>
+        </tbody>
+    </table>
+</ng-container>
+
+<ng-template #emptyCart>
+    <div>
+        <h5 class="text-center rasc-text-warning">There are no products.</h5>
+    </div>
+</ng-template>

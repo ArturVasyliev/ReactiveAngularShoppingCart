@@ -10,7 +10,8 @@
     <tbody>
         <tr *ngFor="let product of products$ | async">
             <td>{{ product.productName }}</td>
-            <td><button type="button" class="btn btn-outline-primary btn-sm">Buy</button></td>
+            <td><button type="button" class="btn btn-outline-primary btn-sm" (click)="addToCart(product)">Buy</button>
+            </td>
         </tr>
     </tbody>
 </table>

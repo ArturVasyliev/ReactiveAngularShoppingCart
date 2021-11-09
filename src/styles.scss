@@ -1,7 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 
-.rasc- {
-  &text-primary {
-    color: #1976d2;
+.rasc {
+  &-text {
+    &-primary {
+      color: #1976d2;
+    }
+    &-warning {
+      color: rgb(221, 0, 49);
+    }
   }
 }
