@@ -26,6 +26,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('reactive-angular-shopping-cart app is running!');
+    expect(compiled.querySelector('.content span')?.textContent).toContain('Welcome to the reactive-angular-shopping-cart!');
   });
 });
