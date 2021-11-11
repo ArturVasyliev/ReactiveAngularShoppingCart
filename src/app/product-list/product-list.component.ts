@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { from, fromEvent, Observable, of } from 'rxjs';
+import { from, fromEvent, Observable, of, pipe } from 'rxjs';
 import { ShoppingCart } from '../common/shoppingCart.service';
 import { Product } from '../models/product';
 import { delay, exhaustMap, filter, find, flatMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
@@ -34,20 +34,25 @@ export class ProductListComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     this.addButtons.forEach(button => {
       fromEvent(button.nativeElement, 'click')
-        .pipe(
-          map<any, any>(event => event.target.getAttribute('productId')),
-          switchMap(productId => this.products$
-            .pipe(
-              map(products => products.find(product => product.id === Number(productId)) as Product)
-            )
-          ),
-          exhaustMap(product => this.shoppingCart.addProduct(product)
-            .pipe(
-              delay(300) // checking that we restrict number of clicks on add button
-          ))
-        )
+        .pipe(addProductToCart(this.products$, this.shoppingCart))
         .subscribe(); // don't know how to implement this without subscribing
     });
   }
 
+}
+
+export function addProductToCart(products: Observable<Product[]>, shoppingCart: ShoppingCart){
+  return pipe(
+    map<any, any>(event => event.target.getAttribute('productId')),
+    switchMap<any, Observable<Product>>(productId => products
+      .pipe(
+        map<Product[], Product>(products => products.find(product => product.id === Number(productId)) as Product)
+      )
+    ),
+    exhaustMap<Product, Observable<any>>(product => shoppingCart.addProduct(product)
+      .pipe(
+        delay(300) // checking that we restrict number of clicks on add button
+      )
+    )
+  )
 }
