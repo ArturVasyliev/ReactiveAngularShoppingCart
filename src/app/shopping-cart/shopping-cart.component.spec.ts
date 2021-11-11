@@ -4,14 +4,30 @@ import { removeProducts, ShoppingCartComponent } from './shopping-cart.component
 import { throttleTime } from 'rxjs/operators';
 import { ShoppingCart } from '../common/shoppingCart.service';
 import { Observable, of } from 'rxjs';
+import { By } from '@angular/platform-browser';
+import { Product } from '../models/product';
 
 describe('ShoppingCartComponent', () => {
   let component: ShoppingCartComponent;
   let fixture: ComponentFixture<ShoppingCartComponent>;
+  const products = [
+    { id: 1, productName: "Lego Star Wars toy", quantity: 1 },
+    { id: 2, productName: "MacBook Air M1", quantity: 1 },
+    { id: 3, productName: "Pepsi", quantity: 1 },
+    { id: 4, productName: "Call of Duty PS5", quantity: 1 },
+    { id: 5, productName: "Spider-Man: No Way Home ticket", quantity: 1 }
+  ];
 
   beforeEach(async () => {
+    
+    const shoppingCartFake = jasmine.createSpyObj(
+      'ShoppingCart', ['addProduct', 'removeProduct'], {products$: of(products)});
+    shoppingCartFake.addProduct.and.returnValue(of({ id: 3, productName: "Pepsi", quantity: 1 }));
+    shoppingCartFake.removeProduct.and.returnValue(of(true));
+
     await TestBed.configureTestingModule({
-      declarations: [ ShoppingCartComponent ]
+      declarations: [ ShoppingCartComponent ],
+      providers: [ { provide: ShoppingCart, useValue: shoppingCartFake } ],
     })
     .compileComponents();
   });
@@ -25,6 +41,20 @@ describe('ShoppingCartComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show all products in view', () => {
+    const rows = fixture.debugElement.queryAll(By.css('tbody tr'));
+    component.products$.subscribe(products => expect(products.length).toEqual(rows.length));
+  });
+
+  it('removeProduct() should add product with quantity 1 to the Subject', () => {
+    const inputProduct = { id: 2, productName: "MacBook Air M1", quantity: 2 };
+    const expectedProduct = { id: 2, productName: "MacBook Air M1", quantity: 1 };
+    
+    component['removeStream$'].subscribe(prod => expect(prod).toEqual(expectedProduct));
+    component.removeProduct(inputProduct);
+  });
+
 });
 
 describe('RemoveProducts Marble Testing', () => {
