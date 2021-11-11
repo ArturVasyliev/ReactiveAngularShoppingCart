@@ -10,7 +10,7 @@ export class ShoppingCart {
     private subject = new BehaviorSubject<Product[]>([]);
     products$: Observable<Product[]> = this.subject.asObservable();
 
-    addProduct(newProduct: Product) : Observable<any>{
+    addProduct(newProduct: Product) : Observable<Product>{
         const newProducts = this.subject.getValue().slice(0);
         const productIndex = newProducts.findIndex(product => product.id === newProduct.id);
 
@@ -26,24 +26,24 @@ export class ShoppingCart {
         }
 
         this.subject.next(newProducts);
-        return of(newProducts[productIndex]);
+        return productIndex === -1 ? of(newProduct) :  of(newProducts[productIndex]);
     }
 
-    removeProduct(productToRemove: Product) : Observable<any>{
+    removeProduct(productToRemove: Product) : Observable<boolean>{
         const newProducts = this.subject.getValue().slice(0);
         const productIndex = newProducts.findIndex(product => product.id === productToRemove.id);
 
         if(productIndex !== -1){
             const product = newProducts[productIndex];
 
-            if(product.quantity === 1){
+            if(productToRemove.quantity >= product.quantity){
                 newProducts.splice(productIndex, 1);
             }
             else{
                 newProducts[productIndex] = 
                 {
                     ...newProducts[productIndex], 
-                    quantity: newProducts[productIndex].quantity - 1
+                    quantity: newProducts[productIndex].quantity - productToRemove.quantity
                 };
             }
 
