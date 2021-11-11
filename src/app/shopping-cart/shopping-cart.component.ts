@@ -11,7 +11,7 @@ import { Product } from '../models/product';
 })
 export class ShoppingCartComponent implements OnInit {
 
-  removeStream$ = new Subject<Product>();
+  private removeStream$ = new Subject<Product>();
 
   products$!: Observable<Product[]>;
 
@@ -26,7 +26,8 @@ export class ShoppingCartComponent implements OnInit {
   }
 
   removeProduct(product: Product){
-    this.removeStream$.next(product);
+    const productToRemove = {...product, quantity: 1 };
+    this.removeStream$.next(productToRemove);
   }
 
 }
