@@ -1,23 +1,24 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Product } from "../models/product";
 
 @Injectable({
     providedIn: 'root'
 })
-export class ShoppingCart {
+export class ShoppingCartService {
     
     private subject = new BehaviorSubject<Product[]>([]);
     products$: Observable<Product[]> = this.subject.asObservable();
 
-    addProduct(newProduct: Product) : Observable<Product>{
-        const newProducts = this.subject.getValue().slice(0);
+    addProduct(newProduct: Product) : void {
+        let newProducts = [...this.subject.getValue()];
         const productIndex = newProducts.findIndex(product => product.id === newProduct.id);
 
         if(productIndex === -1){
-            newProducts.push(newProduct);
+            newProducts = [...newProducts, newProduct];
         }
         else{
+            newProducts = [...newProducts];
             newProducts[productIndex] = 
             {
                 ...newProducts[productIndex], 
@@ -26,11 +27,10 @@ export class ShoppingCart {
         }
 
         this.subject.next(newProducts);
-        return productIndex === -1 ? of(newProduct) :  of(newProducts[productIndex]);
     }
 
-    removeProduct(productToRemove: Product) : Observable<boolean>{
-        const newProducts = this.subject.getValue().slice(0);
+    removeProduct(productToRemove: Product) : void {
+        const newProducts = [...this.subject.getValue()];
         const productIndex = newProducts.findIndex(product => product.id === productToRemove.id);
 
         if(productIndex !== -1){
@@ -48,9 +48,6 @@ export class ShoppingCart {
             }
 
             this.subject.next(newProducts);
-            return of(true);
         }
-
-        return of(false);
     }
 }
