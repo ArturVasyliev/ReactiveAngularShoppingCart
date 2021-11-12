@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, from, Observable } from "rxjs";
+import { mergeMap, scan, tap } from "rxjs/operators";
 import { Product } from "../models/product";
 
 @Injectable({
@@ -11,6 +12,21 @@ export class ShoppingCartService {
     products$: Observable<Product[]> = this.subject.asObservable();
 
     addProduct(newProduct: Product) : void {
+
+        // Appempting to use observable approach to apply add product logic (unsuccessful)
+        // this.products$.pipe(
+        //     mergeMap(products => from(products)),
+        //     //tap(x => console.log(x)),
+        //     scan<Product, Product[]>((products, product) => {
+        //         return product.id === newProduct.id 
+        //             ? [...products, {...product, quantity: product.quantity + newProduct.quantity}] 
+        //             : [...products, product];
+        //     }, []),
+        // ).subscribe(x => {
+        //     console.log(x);
+        //     this.subject.next(x);
+        // });
+
         let newProducts = [...this.subject.getValue()];
         const productIndex = newProducts.findIndex(product => product.id === newProduct.id);
 
