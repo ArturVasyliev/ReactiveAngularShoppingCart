@@ -1,22 +1,19 @@
-import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { from, fromEvent, Observable, of, pipe } from 'rxjs';
-import { ShoppingCart } from '../common/shoppingCart.service';
+import { Component, OnInit } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { ShoppingCartService } from '../common/shoppingCart.service';
 import { Product } from '../models/product';
-import { delay, exhaustMap, filter, find, flatMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'product-list',
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.scss']
 })
-export class ProductListComponent implements OnInit, AfterViewInit {
-
-  @ViewChildren('addBtn')
-  addButtons!:QueryList<any>;
+export class ProductListComponent implements OnInit {
 
   products$!: Observable<Product[]>;
 
-  constructor(private shoppingCart: ShoppingCart) {}
+  constructor(private shoppingCart: ShoppingCartService) {}
   
   ngOnInit(): void {
     this.products$ = of<Product[]>([
@@ -31,28 +28,8 @@ export class ProductListComponent implements OnInit, AfterViewInit {
     );
   }
 
-  ngAfterViewInit(): void {
-    this.addButtons.forEach(button => {
-      fromEvent(button.nativeElement, 'click')
-        .pipe(addProductToCart(this.products$, this.shoppingCart))
-        .subscribe(); // don't know how to implement this without subscribing
-    });
+  addProduct(product: Product){
+    this.shoppingCart.addProduct(product);
   }
 
-}
-
-export function addProductToCart(products: Observable<Product[]>, shoppingCart: ShoppingCart){
-  return pipe(
-    map<any, any>(event => event.target.getAttribute('productId')),
-    switchMap<any, Observable<Product>>(productId => products
-      .pipe(
-        map<Product[], Product>(products => products.find(product => product.id === Number(productId)) as Product)
-      )
-    ),
-    exhaustMap<Product, Observable<any>>(product => shoppingCart.addProduct(product)
-      .pipe(
-        delay(300) // checking that we restrict number of clicks on add button
-      )
-    )
-  )
 }

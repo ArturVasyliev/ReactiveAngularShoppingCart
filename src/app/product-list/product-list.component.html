@@ -11,7 +11,7 @@
         <tr *ngFor="let product of products$ | async">
             <td>{{ product.productName }}</td>
             <td><button type="button" [attr.productId]="product.id" class="btn btn-outline-primary btn-sm"
-                    #addBtn>Buy</button>
+                    (click)="addProduct(product)">Buy</button>
             </td>
         </tr>
     </tbody>

@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, of, pipe, Subject } from 'rxjs';
-import { delay, exhaustMap, groupBy, map, mergeMap } from 'rxjs/operators';
-import { ShoppingCart } from '../common/shoppingCart.service';
+import { Observable } from 'rxjs';
+import { ShoppingCartService } from '../common/shoppingCart.service';
 import { Product } from '../models/product';
 
 @Component({
@@ -11,38 +10,17 @@ import { Product } from '../models/product';
 })
 export class ShoppingCartComponent implements OnInit {
 
-  private removeStream$ = new Subject<Product>();
-
   products$!: Observable<Product[]>;
 
-  constructor(private shoppingCart: ShoppingCart) { }
+  constructor(private shoppingCart: ShoppingCartService) { }
 
   ngOnInit(): void {
     this.products$ = this.shoppingCart.products$;
-
-    this.removeStream$.pipe(removeProducts(this.shoppingCart))
-      .subscribe(); // don't know how to implement this without subscribing
-
   }
 
   removeProduct(product: Product){
     const productToRemove = {...product, quantity: 1 };
-    this.removeStream$.next(productToRemove);
+    this.shoppingCart.removeProduct(productToRemove);
   }
 
-}
-
-export function removeProducts(shoppingCart: ShoppingCart){
-
-  // should I divide it into more functions?
-  return pipe(
-    groupBy<Product, number>(product => product.id),
-    mergeMap(group$ => group$.pipe(
-      exhaustMap(product => shoppingCart.removeProduct(product)
-        .pipe(
-          delay(500)
-        )
-      )
-    ))
-  );
 }
