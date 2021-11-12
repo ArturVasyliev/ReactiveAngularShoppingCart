@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { Product } from "../models/product";
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root' // removing 'providedIn' disables singleton logic
 })
 export class ShoppingCartService {
     

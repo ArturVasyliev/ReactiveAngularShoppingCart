@@ -7,7 +7,9 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'product-list',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
+  // The specification below creates an instance of ShoppingCartService for the current component
+  // providers: [ShoppingCartService]
 })
 export class ProductListComponent implements OnInit {
 
